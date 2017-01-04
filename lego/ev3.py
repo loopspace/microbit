@@ -53,6 +53,15 @@ op = Map({
         'Busy': b'\x95',
         'Ready': b'\x96'
     }),
+    'Input': Map({
+        'Device': b'\x99',
+        'Read': b'\x9A',
+        'Test': b'\x9B',
+        'Ready': b'\x9C',
+        'ReadSI': b'\x9D',
+        'ReadExt': b'\x9E',
+        'Write': b'\x9F'
+    }),
     'Output': Map({
         'Set_Type': b'\xA1',
         'Reset': b'\xA2',
@@ -83,7 +92,7 @@ op = Map({
 })
 
 # Commands
-cmds: Map({
+cmds = Map({
     'get': Map({
         'ON_OFF': b'\x01',
         'VISIBLE': b'\x02',
@@ -94,7 +103,18 @@ cmds: Map({
         'NETWORK': b'\x0E',
         'PRESENT': b'\x0F',
         'ENCRYPT': b'\x10',
-        'INCOMMING': b'\x11'
+        'INCOMMING': b'\x11',
+        'FORMAT': b'\x02',
+        'TYPEMODE': b'\x05',
+        'SYMBOL': b'\x06',
+        'RAW': b'\x08',
+        'CONNECTION': b'\x0C',
+        'NAME': b'\x15',
+        'MODENAME': b'\x16',
+        'FIGURES': b'\x18',
+        'CHANGES': b'\x19',
+        'MINMAX': b'\x1E',
+        'BUMPS': b'\x1F'
     }),
     'set': Map({
         'ON_OFF': b'\x01',
@@ -116,6 +136,25 @@ cmds: Map({
     'favour': Map({
         'ITEMS': b'\x0A',
         'ITEM': b'\x0B'
+    }),
+    'cal': Map({
+        'MINMAX': b'\x03',
+        'DEFAULT': b'\x04',
+        'MIN': b'\x07',
+        'MAX': b'\x08',
+    }),
+    'clr': Map({
+        'ALL': b'\x0A',
+        'CHANGES': b'\x1A'
+    }),
+    'Stop': Map({
+        'ALL': b'\x0D'
+    }),
+    'SETUP': b'\x09',
+    'Ready': Map({
+        'PCT': b'\x1B',
+        'RAW': b'\x1C',
+        'SI': b'\x1D'
     })
 })
 
@@ -488,7 +527,30 @@ def LVX(value: int) -> bytes:
     else:
         return LCS(chr(value))
     
-
+def GVX(value: int) -> bytes:
+    if value < 32:
+        value += 96
+        return value.to_bytes(1,byteorder='little')
+    elif value < 256:
+        return b'\xE1' + value.to_bytes(1,byteorder='little')
+    elif value < 65536:
+        return b'\xE2' + value.to_bytes(2,byteorder='little')
+    elif value < 4294967296:
+        return b'\xE3' + value.to_bytes(4,byteorder='little')
+    else:
+        return LCS(chr(value))
+    
+def port_motor_input(port_output: int) -> bytes:
+    if port_output == port.A:
+        return LCX(16)
+    elif port_output == port.B:
+        return LCX(17)
+    elif port_output == port.C:
+        return LCX(18)
+    elif port_output == port.D:
+        return LCX(19)
+    else:
+        raise ValueError('port_output needs to be one of the port numbers')
 
 def print_hex(desc: str, data: bytes) -> None:
     print(str(datetime.now()) + ': ' + desc + ' 0x|' + ':'.join('{:02X}'.format(byte) for byte in data) + '|')
