@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import select
 import sys
 import serial
@@ -16,11 +17,31 @@ s.reset_input_buffer()
 mB = ev3.LargeMotor('outB')
 mC = ev3.LargeMotor('outC')
 mA = ev3.MediumMotor('outA')
+btn = ev3.Button()
 
 claw = False
+
+
+def closedown():
+	print("Closing down ...")
+	ev3.Sound.play('/home/robot/current/programs/microbit/leke.wav')
+	s.close()
+	ev3.Leds.all_off()
+	mA.stop()
+	mB.stop()
+	mC.stop()
+	exit()
+
+def btnclose(b):
+	closedown()
+
+btn.on_backspace = btnclose
+
 print("Ready to go ...")
+ev3.Sound.play('/home/robot/current/programs/microbit/klar.wav')
 try:
 	while True:
+		btn.process()
 		data = s.readline().decode('ascii').rstrip()
 		if data == 'None':
 			continue
@@ -66,9 +87,4 @@ try:
 except KeyboardInterrupt:
 	pass	
 finally:
-	print("Closing down ...")
-	s.close()
-	ev3.Leds.all_off()
-	mA.stop()
-	mB.stop()
-	mC.stop()
+	closedown()
