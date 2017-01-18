@@ -1,4 +1,4 @@
-import pygame, sys, random, time, math, mbevent
+import pygame, sys, random, time, math, mbhandler
 import pygame.freetype
 pygame.init()
 
@@ -39,9 +39,9 @@ clock = pygame.time.Clock()
 
 inplay = True
 
-TREEEVENT = pygame.USEREVENT
+mbhandler.init(method="pygame")
 
-mbevent.init()
+TREEEVENT = pygame.USEREVENT
 
 pygame.time.set_timer(TREEEVENT,30)
 
@@ -69,8 +69,8 @@ while 1:
                     t.move_ip(0,-1)
                 for g in gems:
                     g.move_ip(0,-1)
-        if event.type == mbevent.MICROBITEVENT:
-            speed = math.copysign(1,event.x)
+        if event.type == mbhandler.MICROBITEVENT:
+            speed = math.copysign(1,event.accelerometer['x'])
             
 
     if inplay:

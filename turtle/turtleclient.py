@@ -4,7 +4,7 @@ import numpy
 import time
 import turtle
 
-PORT = "/dev/tty.usbmodemFA132"
+PORT = "/dev/tty.usbmodemFD122"
 BAUD = 115200
 
 s = serial.Serial(PORT)
@@ -37,8 +37,10 @@ try:
         #read a line from the microbit, decode it and
         # strip the whitespace at the end
         data = s.readline().decode("ascii").rstrip()
+        if data == 'None':
+            continue
         #split the accelerometer data into x, y, z, a, b
-        data_s = data.split(" ")
+        data_s = data.split(":")
         dt = time.time() - st
         st = time.time()
         g = numpy.array([float(i) for i in data_s[0:3]])
