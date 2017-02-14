@@ -49,15 +49,25 @@ def worker():
             continue
         if data == 'None':
             continue
-        data_s = data.split(":")
-        if len(data_s) != 6:
-            continue
-        name = data_s[0]
-        x = int(data_s[1])//16
-        y = int(data_s[2])//16
-        z = int(data_s[3])//16
-        a = data_s[4] == 'True'
-        b = data_s[5] == 'True'
+        v = int(data.split(':')[0],16)
+        b = (v & 1 == 1)
+        v >>= 1
+        a = (v & 1 == 1)
+        v >>= 1
+        z = v & 255
+        v >>= 8
+        y = v & 255
+        v >>= 8
+        x = v & 255
+        if x > 127:
+            x -= 256
+        if y > 127:
+            y -= 256
+        if z > 127:
+            z -= 256
+        x *= -1
+        y *= -1
+        name = data.split(':')[1]
         e = {
             'name': name,
             'accelerometer': {
