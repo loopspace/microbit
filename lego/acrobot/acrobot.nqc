@@ -1,5 +1,7 @@
 #define THRESHOLD 300
 #define DELAY 5
+#define MSGLEN 2
+#define MSGTOP 4 // 2^MSGLEN
 int c;
 
 task main() {
@@ -9,22 +11,37 @@ task main() {
   SetSensorType(SENSOR_2,SENSOR_TYPE_NONE);
   SetSensorMode(SENSOR_2,SENSOR_MODE_RAW);
   SetUserDisplay(c,0);
-  //  SetUpperLimit(2,UPPER);
-  //  SetLowerLimit(2,LOWER);
-  //  SelectDisplay(DISPLAY_SENSOR_2);
-  SetPower(OUT_A+OUT_C,1);
+  SetPower(OUT_A+OUT_C,7);
   OnFwd(OUT_A+OUT_C);
   while (true) {
     if (SENSOR_2 < THRESHOLD) {
       s = 0;
-      for (i = 0; i < 10; i++ ) {
+      for (i = 0; i < MSGLEN; i++ ) {
 	Wait(DELAY);
 	if (SENSOR_2 < THRESHOLD) {
-	  s += 1024;
+	  s += MSGTOP;
 	}
 	s >>= 1;
       }
       c = s;
+      switch(s) {
+      case 0:
+	Fwd(OUT_A+OUT_C);
+	break;
+      case 1:
+	Fwd(OUT_A);
+	Rev(OUT_C);
+	break;
+      case 2:
+	Rev(OUT_A);
+	Fwd(OUT_C);
+	break;
+      case 3:
+	Rev(OUT_A+OUT_C);
+	break;
+      }
+      /*
+      // Why doesn't this work?
       if (s & 1 == 1) {
 	Fwd(OUT_A);
       } else {
@@ -35,6 +52,7 @@ task main() {
       } else {
 	Rev(OUT_C);
       }
+      */
     }
   }
 }

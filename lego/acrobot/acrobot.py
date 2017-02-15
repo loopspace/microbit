@@ -3,14 +3,16 @@ from microbit import *
 
 radio.on()
 DELAY=50
+MSGLEN=2
 state = { 'a': False, 'b': False }
 motors = { 'l': 0, 'r': 0 }
+pin1.write_digital(0)
 
 def donum(i):
     print(i)
     pin1.write_digital(1)
     sleep(DELAY)
-    for j in range(10):
+    for j in range(MSGLEN):
         if i & 1 == 1:
             pin1.write_digital(1)
         else:
@@ -18,9 +20,7 @@ def donum(i):
         i >>= 1
         sleep(DELAY)
     pin1.write_digital(0)
-            
 
-pin1.write_digital(0)
 while True:
     data = radio.receive()
     if data == 'None':
