@@ -38,7 +38,11 @@ snake's head strike and this involves moving a motor to a particlar
 position.
 
 * `edubot.py` This is for the base robot made with the Education kit.
-* `Gripp3r.py` This is for the [Gripp3r](https://www.lego.com/en-gb/mindstorms/build-a-robot/gripp3r) robot with the Home kit.
+* `Gripp3r.py` This is for the
+  [Gripp3r](https://www.lego.com/en-gb/mindstorms/build-a-robot/gripp3r)
+  robot with the Home kit.  This doesn't actually use the `mbhandler`
+  module as it was written prior to that being separated into its own
+  code, so it needs updating.
 * `R3ptar.py` This is for the
   [R3ptar](https://www.lego.com/en-gb/mindstorms/build-a-robot/r3ptar)
   robot.  It only needs one piece changing to ensure that the USB port

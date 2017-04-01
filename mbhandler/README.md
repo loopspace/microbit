@@ -3,14 +3,14 @@
 ## Introduction
 
 This directory contains the core files for the `mbhandler` module
-which handles the communication between a separate microbit and
+which handles the communication between a portable microbit and
 another device, using a second microbit as a relay.
 
 ## Files
 
 
 * [`mb_radio_sender.py`](mb_radio_sender.py) should be flashed to the
-  handheld microbit.
+  portable microbit.
 * [`mb_radio_receiver.py`](mb_radio_receiver.py) should be flashed to
   the receiver microbit.
 * [`mbhandler.py`](mbhandler.py) is a utility python module that can
@@ -25,7 +25,7 @@ another device, using a second microbit as a relay.
 ## Instructions
 
 You need two microbits to use this module.  One is the sender and the
-other the receiver.  The sender is handheld and should be battery
+other the receiver.  The sender is portable and should be battery
 powered to allow fully movement.  The receiver is connected to
 whatever device is to be controlled via a USB cable.
 
@@ -64,3 +64,34 @@ At present, there is only one option available:
   event handling to pass the information from the microbit.
 
 Later versions of the module may provide more options.
+
+## API
+
+The `mbhandler` module provides the calling script with a stream of
+information read from the portable microbit.  That information is
+provided as a *dictionary*.  Its structure is as follows:
+
+~~~
+-|- name                  An identifier
+ |- accelerometer -|      The accelerometer readings, scaled to -256 to 255
+ |                 |- x
+ |                 |- y
+ |                 |- z
+ |- button_a -|           The state of button A, as booleans
+ |            |- pressed   true if it is currently pressed
+ |            |- down      true if it has changed to being pressed
+ |            |- up        true if it has changed to not being pressed
+ |- button_b -|           The state of button B, as booleans
+ |            |- pressed   true if it is currently pressed
+ |            |- down      true if it has changed to being pressed
+ |            |- up        true if it has changed to not being pressed
+~~~
+
+The identifier is a name that can be set in `mb_radio_sender.py`.
+This can be used if more than one microbit is sending information to
+distinguish between them.
+
+The accelerometer readings are scaled to +/-256 (rather than +/-1024
+as in the micropython docs) since the microbit only actually reads to
+8bit accuracy and this saves us some bits in encoding the information.
+
