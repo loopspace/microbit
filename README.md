@@ -16,7 +16,7 @@ readings from its sensors.  The second microbit can then be connected
 to a device which can use those readings.
 
 
-#### [mbhander](mbhander/)
+#### [mbhander](mbhander/README.md)
 
 This provides the utility programs.
 
