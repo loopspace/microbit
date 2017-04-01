@@ -26,3 +26,6 @@ The images for the skier, trees, and gems are all from
 * [fir tree](https://openclipart.org/detail/181473/douglas-fir)
 * [gem](https://openclipart.org/detail/196319/crystal-gems-glittering-blue-yellow-precious-gems) (clipped to just one of them)
 
+## Old Code
+
+The file `mbevent.py` was used before I refactored the micro:bit handling code into its own module.

@@ -38,11 +38,6 @@ snake's head strike and this involves moving a motor to a particlar
 position.
 
 * `edubot.py` This is for the base robot made with the Education kit.
-* `Gripp3r.py` This is for the
-  [Gripp3r](https://www.lego.com/en-gb/mindstorms/build-a-robot/gripp3r)
-  robot with the Home kit.  This doesn't actually use the `mbhandler`
-  module as it was written prior to that being separated into its own
-  code, so it needs updating.
 * `R3ptar.py` This is for the
   [R3ptar](https://www.lego.com/en-gb/mindstorms/build-a-robot/r3ptar)
   robot.  It only needs one piece changing to ensure that the USB port
@@ -69,3 +64,25 @@ the RCX brick.
 The RCX scripts are written using [NQC](https://github.com/jverne/nqc.git).
 
 * [`acrobot`](acrobot) These scripts are for the acrobot.
+
+## Old Experiments
+
+* `Gripp3r.py` This is for the
+  [Gripp3r](https://www.lego.com/en-gb/mindstorms/build-a-robot/gripp3r)
+  robot with the Home kit.  This doesn't actually use the `mbhandler`
+  module as it was written prior to that being separated into its own
+  code, so it needs updating.
+* `ev3.py` Prior to learning about `ev3dev`, I had a go at controlling
+  the EV3 robot by sending commands from a PC via bluetooth.  It was
+  somewhat convoluted (the chain of command went MB -> MB -> PC ->
+  EV3) but a useful starting point. This was the module for
+  assembling the commands to be sent to the EV3.  It was based on the
+  excellent tutorials at
+  [ev3 Direct Commands](http://ev3directcommands.blogspot.co.uk).
+* `map.py` A utility for `ev3.py`, from [StackOverflow](http://stackoverflow.com/a/32107024).
+* `EV3_Client.py` A script for controlling an EV3 robot by a micro:bit
+  via a PC.
+* `EV3_do_nothing_bluetooth.py` Successfully doing nothing is doing
+  something.
+* `sender.py` An early script for controlling an EV3 robot from a PC
+  via bluetooth (no micro:bits involved).
