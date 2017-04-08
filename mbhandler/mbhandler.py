@@ -28,7 +28,7 @@ def get_port():
     raise NoMicrobitError("No microbits found")
     return None
 
-def worker():
+def __default_worker():
 
     port = get_port()
     
@@ -49,7 +49,10 @@ def worker():
             continue
         if data == 'None':
             continue
-        v = int(data.split(':')[0],16)
+        try:
+            v = int(data.split(':')[0],16)
+        except:
+            continue
         b = (v & 1 == 1)
         v >>= 1
         a = (v & 1 == 1)
@@ -92,6 +95,28 @@ def worker():
 
     s.close()
 
+def __raw_worker():
+
+    port = get_port()
+    
+    s = serial.Serial(port)
+    s.baudrate = BAUD
+    s.parity = serial.PARITY_NONE
+    s.databits = serial.EIGHTBITS
+    s.stopbits = serial.STOPBITS_ONE
+
+    while True:
+        if not RUNNING:
+            break
+        try: 
+            data = s.readline().decode("ascii").rstrip()
+        except:
+            continue
+        if data == 'None':
+            continue
+        post(data)
+
+    s.close()
 
 def __pygame_init():
     global pygame
@@ -111,7 +136,7 @@ def __pygame_post(e):
 
 def __queue_init():
     global post
-    global queue    
+    global queue
     queue = q.Queue()
     post = __queue_post
     
@@ -122,12 +147,18 @@ def __queue_post(e):
         pass
 
 def init(**kwargs):
-
+    global worker
     method = "queue"
+    worker = __default_worker
     
     if 'method' in kwargs:
         method = kwargs['method']
+    if 'output' in kwargs:
+        output = kwargs['output']
 
+    if output == "raw":
+        worker = __raw_worker
+    
     if method == "pygame":
         __pygame_init()
     else:
