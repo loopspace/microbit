@@ -38,58 +38,20 @@ def s1dist(a,b):
 def addTuple(a,b):
     return (min(a[0] + b[0],255),min(a[1] + b[1],255),min(a[2] + b[2],255))
 
-class Ball:
-
-    def __init__(self,a,c):
-        self.angle = a
-        self.velocity = 0
-        self.colour = c
-        self.active = True
-
-    def draw(self,clrs):
-        a = (6 + math.floor( (self.angle/(2*math.pi) %1)*num_pixels))%num_pixels
-        if self.active:
-            clrs[a] = addTuple( self.colour, clrs[a] )
-        else:
-            clrs[a] = (127,127,127)
-
-    def update(self,g,dt):
-        if not self.active:
-            return
-        self.oangle = self.angle
-        a = -g[0]/1024 * math.sin(self.angle) + g[1]/1024 * math.cos(self.angle)
-        a -= friction * self.velocity
-        self.angle += speed * self.velocity * dt
-        self.angle %= 2*math.pi
-        self.velocity += a * dt
-
-    def collision(self,b):
-        if not self.active or not b.active:
-            return
-        if s1dist(self.angle, b.angle) < math.pi/2:
-            d = direction(self.angle, b.angle)
-            od = direction(self.oangle, b.oangle)
-            if d != od:
-                if self.colour == b.colour:
-                    self.active = False
-                    b.active = False
-                self.angle, b.angle = b.angle, self.angle
-                self.velocity, b.velocity = b.velocity, self.velocity
-
-
 np = neopixel.NeoPixel(pin0, num_pixels)
 np.clear()
 
 colours = [
     (127,0,0),
     (0,127,0),
-    (0,0,127)
+    (0,0,127),
+    (127,127,127)
 ]
 
 balls = []
-balls.append( Ball(0, (127,0,0) ) )
-balls.append( Ball(2*math.pi/3, (0,127,0) ) )
-balls.append( Ball(4*math.pi/3, (0,0,127) ) )
+balls.append( [0,0,0] )
+balls.append( [2*math.pi/3,0,1] )
+balls.append( [4*math.pi/3,0,2] )
 
 et = running_time()
 st = running_time()
@@ -100,26 +62,49 @@ while True:
         clrs.append( (0,0,0) )
     dt = (running_time() - et)/1000
     et = running_time()
-    g = accelerometer.get_values()
-
-    for i in range(len(balls)-1,-1,-1):
-        if not balls[i].active:
-            del balls[i]
+    gx = accelerometer.get_x()/1024
+    gy = accelerometer.get_y()/1024
 
     if et - st > spawn:
-        i = random.randint(0,len(balls)-1)
-        balls.insert(i, Ball( balls[(i-1)%(len(balls))].angle + s1diff(balls[(i-1)%(len(balls))].angle, balls[i].angle)/2,  random.choice(colours) ) )
+        d = s1dist(balls[0][0], balls[ len(balls) - 1][0])
+        k = 0
+        for i in range(len(balls) - 1):
+            if s1dist(balls[i][0], balls[i+1][0]) < d:
+                k = i+1
+                d = s1dist(balls[i][0], balls[i+1][0])
+        balls.insert(k, [ (balls[k][0] + balls[ (k+1) % len(balls) ][0])/2, 0, random.randint(0,2) ] )
         st = et
-    
-    for b in balls:
-        b.update(g,dt)
 
+    p = []
+    for b in balls:
+        p.append(b[0])
+        a = -gx * math.sin(b[0]) + gy * math.cos(b[0]) - friction * b[1]
+        b[0] += speed * b[1] * dt
+        b[0] %= 2*math.pi
+        b[1] += a * dt
+
+    r = set()
     for i in range(len(balls)):
-        balls[i].collision(balls[(i+1)%(len(balls))])
+        j = (i+1)%(len(balls))
+        if s1dist(balls[i][0], balls[j][0]) < math.pi/2 and direction(balls[i][0], balls[j][0]) != direction(p[i], p[j]):
+            if balls[i][2] == balls[j][2]:
+                balls[i][2] = 3
+                balls[j][2] = 3
+                r.add(i)
+                r.add(j)
+            else:
+                balls[i][0], balls[j][0] = balls[j][0], balls[i][0]
+                balls[i][1], balls[j][1] = balls[j][1], balls[i][1]
 
     for b in balls:
-        b.draw(clrs)
+        a = (6 + math.floor( (b[0]/(2*math.pi) %1)*num_pixels))%num_pixels
+        clrs[a] = addTuple( colours[b[2]], clrs[a] )
 
+    r = sorted(list(r), reverse = True)
+
+    for i in r:
+        del balls[i]
+        
     for i in range(24):
         np[i] = clrs[i]
     
