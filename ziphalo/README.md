@@ -1,8 +1,8 @@
 # Ziphalo Projects
 
-These are programs that use the [ziphalo]() lights from [kitronik]().
+These are programs that use the [ziphalo](https://www.kitronik.co.uk/5625-zip-halo-for-the-bbc-microbit.html) lights from [kitronik](https://www.kitronik.co.uk/).
 This is a ring of 24 RGB LEDS which can be controlled using the
-[neopixel]() module of [micropython]().
+[neopixel](http://microbit-micropython.readthedocs.io/en/latest/neopixel.html) module of [micropython](http://microbit-micropython.readthedocs.io/en/latest/index.html).
 
 * `bluehalo.py`  Sends a blue light around the ring.
 * `circuit.py`  Sends two lights around the ring in opposite
@@ -15,3 +15,6 @@ This is a ring of 24 RGB LEDS which can be controlled using the
    round the ring (taking 1 second) and each time it passes the green
    light, it bumps it on one place.  Similarly, the blue light gets
    bumped by the green.  Press button A to start and stop.
+* `down.py`  Uses the accelerometer to figure out which way is up.
+
+The other programs were used in experimenting.
