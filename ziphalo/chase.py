@@ -20,6 +20,7 @@ generate = running_time() + random.randint(2000,4000)
 lifetime = running_time()
 hasTarget = False
 score = 0
+lived = 0
 gameOver = False
 
 def fade(t):
@@ -27,6 +28,9 @@ def fade(t):
 
 while True:
     if gameOver:
+        if button_b.was_pressed():
+            display.show(lived)
+            
         if button_a.was_pressed():
             score = 0
             hasTarget = False
@@ -36,6 +40,7 @@ while True:
             gameOver = False
             position = 0
             velocity = 0
+            et = running_time()
             display.clear()
         else:
             continue
@@ -81,7 +86,8 @@ while True:
                 display.set_pixel(score%5,math.floor((score/5)%5),0)
         else:
             gameOver = True
-            display.show(str(math.floor((running_time() - st)/1000)))
+            lived = str(math.floor((running_time() - st)/1000))
+            display.show(lived)
             np.clear()
                 
         hasTarget = False
