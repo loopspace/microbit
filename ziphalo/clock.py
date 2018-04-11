@@ -9,8 +9,9 @@ np.clear()
 running = False
 st = running_time()
 et = running_time()
+dt = "0"
 
-stepTime = num_pixels/1000
+stepTime = 1000/num_pixels
 
 intensity = 127
 
@@ -22,26 +23,6 @@ shiftG = False
 shiftB = False
 
 while True:
-    clrs = []
-    for i in range(24):
-        clrs.append( (0,0,0) )
-
-    if button_a.was_pressed():
-        if running:
-            running = False
-            et = str((running_time() - st)/1000)
-            display.show(et)
-        else:
-            running = True
-            display.clear()
-            et = running_time()
-            red = 0
-            green = 0
-            blue = 0
-
-    if button_b.was_pressed() and not running:
-        display.show(et)
-        
     if running and running_time() - et > stepTime:
         et = et + stepTime
         red += 1
@@ -64,10 +45,34 @@ while True:
             shiftG = True
 
 
-        clrs[red] = (intensity, 0, 0)
-        clrs[green] = (clrs[green][0], intensity, 0)
-        clrs[blue] = (clrs[blue][0], clrs[blue][1], intensity)
-        
+    gx = accelerometer.get_x()
+    gy = accelerometer.get_y()
+    a = math.floor(math.atan2(gy,gx)/math.pi*12 - 5.5)%num_pixels
+            
     for i in range(num_pixels):
-        np[i] = clrs[i]
+        np[i] = (0,0,0)
+    np[(red+a)%num_pixels] = (intensity, 0, 0)
+    np[(green+a)%num_pixels] = (np[(green+a)%num_pixels][0], intensity, 0)
+    np[(blue+a)%num_pixels] = (np[(blue+a)%num_pixels][0], np[(blue+a)%num_pixels][1], intensity)
+        
     np.show()
+
+    if button_a.was_pressed():
+        if running:
+            running = False
+            dt = str((running_time() - st)/1000)
+            display.show(dt)
+        else:
+            running = True
+            display.clear()
+            et = running_time()
+            st = running_time()
+            red = 0
+            green = 0
+            blue = 0
+            shiftG = False
+            shiftB = False
+
+    if button_b.was_pressed() and not running:
+        display.show(dt)
+        
