@@ -16,5 +16,7 @@ This is a ring of 24 RGB LEDS which can be controlled using the
    light, it bumps it on one place.  Similarly, the blue light gets
    bumped by the green.  Press button A to start and stop.
 * `down.py`  Uses the accelerometer to figure out which way is up.
+* `chase.py` A simple chase game.  Use gravity to control the blue
+  light, try to catch the green lights but avoid the red ones.
 
 The other programs were used in experimenting.
