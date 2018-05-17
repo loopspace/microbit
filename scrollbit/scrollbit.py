@@ -99,7 +99,6 @@ def get_pixel(col, row):
     return _b[_pixel_addr(col, row)]
     
 def _pixel_addr(x, y):
-    #y = 7 - (y + 1)
     x = 17 - (x + 1)
 
     if x > 8:
