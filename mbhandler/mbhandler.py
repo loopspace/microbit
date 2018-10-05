@@ -13,6 +13,7 @@ class NoMicrobitError(Exception):
 
 BAUD = 115200
 RUNNING = True
+DEBUG = False
 
 # Taken (and adapted) from https://github.com/ntoll/microrepl/blob/master/microrepl.py
 def get_port():
@@ -91,6 +92,8 @@ def __default_worker():
         }
         state['a'] = a
         state['b'] = b
+        if DEBUG:
+            print(e)
         post(e)
 
     s.close()
@@ -114,6 +117,8 @@ def __raw_worker():
             continue
         if data == 'None':
             continue
+        if DEBUG:
+            print(data)
         post(data)
 
     s.close()
@@ -128,6 +133,8 @@ def __pygame_init():
     post = __pygame_post
 
 def __pygame_post(e):
+    if isinstance(e,str):
+        e = {'message': e}
     ev = pygame.event.Event(MICROBITEVENT,**e)
     try:
         pygame.event.post(ev)
@@ -148,13 +155,18 @@ def __queue_post(e):
 
 def init(**kwargs):
     global worker
+    global DEBUG
+    
     method = "queue"
+    output = "default"
     worker = __default_worker
     
     if 'method' in kwargs:
         method = kwargs['method']
     if 'output' in kwargs:
         output = kwargs['output']
+    if 'debug' in kwargs:
+        DEBUG = True
 
     if output == "raw":
         worker = __raw_worker
@@ -164,7 +176,6 @@ def init(**kwargs):
     else:
         __queue_init()
 
-    
     t = threading.Thread(target=worker)
     t.daemon = True
     t.start()

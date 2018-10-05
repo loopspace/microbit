@@ -1,21 +1,25 @@
 // nqc -Susb -d acrobat_capacitor.nqc
-#define LOWER 460
-#define LEN 60
 int c;
 
 /*
   Sensor values:
   0: 500
   1: 580
-  2: 620
-  3: 680
+  2: 680
+  3: 740
 
   But the sensor fluctuates, so we need to put the values into "bins"
  */
 
+#define MIN 590
+#define MAX 720
+
+int mid = (MIN + MAX)/2;
+int bin = (MIN - MAX)/16;
+
 task main() {
   int s;
-  int i;
+  int d;
   c = 0;
   SetSensorType(SENSOR_3,SENSOR_TYPE_NONE);
   SetSensorMode(SENSOR_3,SENSOR_MODE_RAW);
@@ -24,23 +28,19 @@ task main() {
   SetPower(OUT_A+OUT_C,7);
   OnFwd(OUT_A+OUT_C);
   while (true) {
-    s = (SENSOR_3 - LOWER)/60;
+    s = (SENSOR_3 - mid)/bin;
+    d = sign(s);
+    s = abs(s);
     c = s;
-    switch(s) {
-    case 0:
-      Fwd(OUT_A+OUT_C);
-      break;
-    case 1:
-      Fwd(OUT_A);
-      Rev(OUT_C);
-      break;
-    case 2:
-      Rev(OUT_A);
-      Fwd(OUT_C);
-      break;
-    case 3:
-      Rev(OUT_A+OUT_C);
-      break;
+    SetPower(OUT_A+OUT_C,s);
+    if (s == 0) {
+      SetOutput(OUT_A+OUT_C,OUT_FLOAT);
+    } else {
+      if (d == 1) {
+	OnFwd(OUT_A+OUT_C);
+      } else {
+	OnRev(OUT_A+OUT_C);
+      }
     }
   }
 }

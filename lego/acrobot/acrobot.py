@@ -1,6 +1,7 @@
 import radio
 from microbit import *
 
+# Set the queue length to 1 to ensure that the next message is the most recent
 radio.on()
 DELAY=50
 MSGLEN=2
